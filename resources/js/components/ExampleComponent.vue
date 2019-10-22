@@ -141,7 +141,8 @@ export default {
       axios.post(this.uri, { name: this.task.name, body: this.task.body }).then(response=> 
       {
           this.tasks.push(response.data.task);
-          $("$create-modal").modal("hide")
+          this.resetData();
+          $("#create-modal").modal("hide")
           }).catch(error=>{
 
               this.errors =[];
@@ -202,6 +203,11 @@ export default {
         this.loading = true;
       });
     }
+  },
+    //clears inputs for next book/task
+  resetData(){
+      this.task.name ='',
+      this.task.body -''
   },
   mounted() {
     this.loadTasks();
