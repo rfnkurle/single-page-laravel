@@ -15,12 +15,13 @@
                </tr>
              </thead>
              <tbody>
-               <tr v-for="(task, index) in tasks">
+               <tr :v-for="(task, index) in tasks">
                  <td>{{index + 1}}</td>
                  <td>{{task.name}}</td>
                  <td>{{task.body}}</td>
                  <td><button @click="loadUpdateModal(index)" class="btn btn-info">Edit</button></td>
                  <td><button @click="deleteTask(index)" class="btn btn-danger">Delete</button></td>
+                
                </tr>
              </tbody>
            </table>
@@ -39,7 +40,7 @@
 
                         <div class="alert alert-danger" v-if="errors.length > 0">
                             <ul>
-                                <li v-for="error in errors">{{error}}</li>
+                                <li :v-for="error in errors">{{error}}</li>
                             </ul>
                         </div>
 
@@ -77,7 +78,7 @@
 
                         <div class="alert alert-danger" v-if="errors.length > 0">
                             <ul>
-                                <li v-for="error in errors">{{error}}</li>
+                                <li :v-for="error in errors">{{error}}</li>
                             </ul>
                         </div>
 
