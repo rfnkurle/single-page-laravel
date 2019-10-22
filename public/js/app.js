@@ -47873,100 +47873,116 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      task: {
-        name: "",
-        body: ""
-      },
-      //properties
-      tasks: [],
-      uri: "http://localhost:8000/tasks/",
-      errors: [],
-      new_update_task: []
-    };
-  },
-
-
-  methods: {
-    loadCreateModal: function loadCreateModal() {
-      $("#create-modal").modal("show");
+    data: function data() {
+        return {
+            task: {
+                name: "",
+                body: ""
+            },
+            //properties
+            tasks: [],
+            uri: "http://localhost:8000/tasks/",
+            errors: [],
+            new_update_task: [],
+            image: 'images/loader1.gif',
+            loading: false
+        };
     },
-    loadUpdateModal: function loadUpdateModal(index) {
-      this.errors = [];
-      $("#update-modal").modal("show");
-      this.new_update_task = this.tasks[index]; //assigns tasks to new_update_task
-    },
-    createTask: function createTask() {
-      var _this = this;
 
-      //axios call that takes name and body inputs and
-      // pushes them into tasks array,  backend controllers, then MySQL database
-      axios.post(this.uri, { name: this.task.name, body: this.task.body }).then(function (response) {
-        _this.tasks.push(response.data.task);
-        $("$create-modal").modal("hide");
-      }).catch(function (error) {
 
-        _this.errors = [];
+    methods: {
+        loadCreateModal: function loadCreateModal() {
+            $("#create-modal").modal("show");
+        },
+        loadUpdateModal: function loadUpdateModal(index) {
+            this.errors = [];
+            $("#update-modal").modal("show");
+            this.new_update_task = this.tasks[index]; //assigns tasks to new_update_task
+        },
+        createTask: function createTask() {
+            var _this = this;
 
-        if (error.response.data.errors.name) {
-          _this.errors.push(error.response.data.errors.name[0]);
+            //axios call that takes name and body inputs and
+            // pushes them into tasks array,  backend controllers, then MySQL database
+            axios.post(this.uri, { name: this.task.name, body: this.task.body }).then(function (response) {
+                _this.tasks.push(response.data.task);
+
+                _this.resetData();
+                $("#create-modal").modal("hide");
+            }).catch(function (error) {
+
+                _this.errors = [];
+
+                if (error.response.data.errors.name) {
+                    _this.errors.push(error.response.data.errors.name[0]);
+                }
+                if (error.response.data.errors.body) {
+                    _this.errors.push(error.response.data.errors.body[0]);
+                }
+            });
+        },
+        updateTask: function updateTask() {
+            var _this2 = this;
+
+            axios.patch(this.uri + this.new_update_task.id, {
+                name: this.new_update_task.name,
+                body: this.new_update_task.body
+            }).then(function (response) {
+                $("#update-modal").modal("hide");
+            }).catch(function (error) {
+                if (error.response.data.errors.name) {
+                    _this2.errors.push(error.response.data.errors.name[0]);
+                }
+                if (error.response.data.errors.body) {
+                    _this2.errors.push(error.response.data.errors.body[0]);
+                }
+            });
+        },
+        deleteTask: function deleteTask(index) {
+            var _this3 = this;
+
+            //need to confirm if user needs to delete item from list/database
+            var confirmBox = confirm("Do you really want to delete this?");
+
+            if (confirmBox == true) {
+
+                axios.delete(this.uri + this.tasks[index].id).then(function (response) {
+
+                    _this3.$delete(_this3.tasks, index);
+                    toastr.success(response.data.message);
+                }).catch(function (error) {
+
+                    console.log("Could not delete for some reason");
+                });
+            }
+        },
+        loadTasks: function loadTasks() {
+            var _this4 = this;
+
+            //axios call to dynamically use data
+            axios.get(this.uri).then(function (response) {
+                _this4.tasks = response.data.tasks;
+                _this4.loading = true;
+            });
+        },
+        resetData: function resetData() {
+
+            this.task.name = '';
+            this.task.body = '';
         }
-        if (error.response.data.errors.body) {
-          _this.errors.push(error.response.data.errors.body[0]);
-        }
-      });
     },
-    updateTask: function updateTask() {
-      var _this2 = this;
-
-      axios.patch(this.uri + this.new_update_task.id, {
-        name: this.new_update_task.name,
-        body: this.new_update_task.body
-      }).then(function (response) {
-        $("#update-modal").modal("hide");
-      }).catch(function (error) {
-        if (error.response.data.errors.name) {
-          _this2.errors.push(error.response.data.errors.name[0]);
-        }
-        if (error.response.data.errors.body) {
-          _this2.errors.push(error.response.data.errors.body[0]);
-        }
-      });
-    },
-    deleteTask: function deleteTask(index) {
-      var _this3 = this;
-
-      //need to confirm if user needs to delete item from list/database
-      var confirmBox = confirm("Do you really want to delete this?");
-
-      if (confirmBox == true) {
-
-        axios.delete(this.uri + this.tasks[index].id).then(function (response) {
-
-          _this3.$delete(_this3.tasks, index);
-          toastr.success(response.data.message);
-        }).catch(function (error) {
-
-          console.log("Could not delete for some reason");
-        });
-      }
-    },
-    loadTasks: function loadTasks() {
-      var _this4 = this;
-
-      //axios call to dynamically use data
-      axios.get(this.uri).then(function (response) {
-        _this4.tasks = response.data.tasks;
-        _this4.loading = true;
-      });
+    mounted: function mounted() {
+        this.loadTasks();
     }
-  },
-  mounted: function mounted() {
-    this.loadTasks();
-  }
 });
 
 /***/ }),
@@ -47978,179 +47994,182 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "button",
-      {
-        staticClass: "btn btn-primary btn-block",
-        on: { click: _vm.loadCreateModal }
-      },
-      [_vm._v("Add New Book")]
-    ),
-    _vm._v(" "),
-    _vm.tasks
-      ? _c("table", { staticClass: "table" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.tasks, function(task, index) {
-              return _c("tr", [
-                _c("th", { attrs: { scope: "row" } }),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(index + 1))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(task.name))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(task.body))]),
-                _vm._v(" "),
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-info",
-                      on: {
-                        click: function($event) {
-                          _vm.loadUpdateModal(index)
-                        }
-                      }
-                    },
-                    [_vm._v("Edit")]
-                  )
-                ]),
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger",
-                      on: {
-                        click: function($event) {
-                          _vm.deleteTask(index)
-                        }
-                      }
-                    },
-                    [_vm._v("Delete")]
-                  )
-                ])
-              ])
-            })
-          )
+    !_vm.loading
+      ? _c("div", [
+          _c("img", {
+            staticClass: "rounded mx-auto d-block",
+            attrs: { src: _vm.image, alt: "Loading..." }
+          })
         ])
-      : _vm._e(),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        staticClass: "modal fade",
-        attrs: { id: "create-modal", tabindex: "-1", role: "dialog" }
-      },
-      [
-        _c(
-          "div",
-          { staticClass: "modal-dialog", attrs: { role: "document" } },
-          [
-            _c("div", { staticClass: "modal-content" }, [
-              _vm._m(1),
-              _vm._v(" "),
-              _c("div", { staticClass: "modal-body" }, [
-                _c("div", { staticClass: "form-group" }, [
-                  _vm.errors.length > 0
-                    ? _c("div", { staticClass: "alert alert-danger" }, [
+      : _c("div", [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary btn-block",
+              on: { click: _vm.loadCreateModal }
+            },
+            [_vm._v("Add New Book")]
+          ),
+          _vm._v(" "),
+          _vm.tasks
+            ? _c("table", { staticClass: "table" }, [
+                _vm._m(0),
+                _vm._v(" "),
+                _c(
+                  "tbody",
+                  _vm._l(_vm.tasks, function(task, index) {
+                    return _c("tr", [
+                      _c("th", { attrs: { scope: "row" } }),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(index + 1))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(task.name))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(task.body))]),
+                      _vm._v(" "),
+                      _c("td", [
                         _c(
-                          "ul",
-                          _vm._l(_vm.errors, function(error) {
-                            return _c("li", [_vm._v(_vm._s(error))])
-                          })
+                          "button",
+                          {
+                            staticClass: "btn btn-info",
+                            on: {
+                              click: function($event) {
+                                _vm.loadUpdateModal(index)
+                              }
+                            }
+                          },
+                          [_vm._v("Edit")]
+                        )
+                      ]),
+                      _c("td", [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-danger",
+                            on: {
+                              click: function($event) {
+                                _vm.deleteTask(index)
+                              }
+                            }
+                          },
+                          [_vm._v("Delete")]
                         )
                       ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "Name" } }, [_vm._v("Name")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.new_update_task.name,
-                        expression: "new_update_task.name"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", id: "name" },
-                    domProps: { value: _vm.new_update_task.name },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.new_update_task,
-                          "name",
-                          $event.target.value
-                        )
-                      }
-                    }
+                    ])
                   })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { attrs: { for: "description" } }, [
-                    _vm._v("Description")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.new_update_task.body,
-                        expression: "new_update_task.body"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", id: "description" },
-                    domProps: { value: _vm.new_update_task.body },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.new_update_task,
-                          "body",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "modal-footer" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-secondary",
-                    attrs: { type: "button", "data-dismiss": "modal" }
-                  },
-                  [_vm._v("Close")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-primary",
-                    attrs: { type: "button" },
-                    on: { click: _vm.updateTask }
-                  },
-                  [_vm._v("Save changes")]
                 )
               ])
-            ])
-          ]
-        )
-      ]
-    ),
+            : _vm._e(),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "modal fade",
+              attrs: { id: "create-modal", tabindex: "-1", role: "dialog" }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "modal-dialog", attrs: { role: "document" } },
+                [
+                  _c("div", { staticClass: "modal-content" }, [
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-body" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _vm.errors.length > 0
+                          ? _c("div", { staticClass: "alert alert-danger" }, [
+                              _c(
+                                "ul",
+                                _vm._l(_vm.errors, function(error) {
+                                  return _c("li", [_vm._v(_vm._s(error))])
+                                })
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("label", { attrs: { for: "Name" } }, [
+                          _vm._v("Name")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.task.name,
+                              expression: "task.name"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { type: "text", id: "name" },
+                          domProps: { value: _vm.task.name },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.task, "name", $event.target.value)
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", { attrs: { for: "description" } }, [
+                          _vm._v("Description")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.task.body,
+                              expression: "task.body"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { type: "text", id: "description" },
+                          domProps: { value: _vm.task.body },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.task, "body", $event.target.value)
+                            }
+                          }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-footer" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-secondary",
+                          attrs: { type: "button", "data-dismiss": "modal" }
+                        },
+                        [_vm._v("Close")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary",
+                          attrs: { type: "button" },
+                          on: { click: _vm.createTask }
+                        },
+                        [_vm._v("Save changes")]
+                      )
+                    ])
+                  ])
+                ]
+              )
+            ]
+          )
+        ]),
     _vm._v(" "),
     _c(
       "div",

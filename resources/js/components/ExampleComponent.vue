@@ -1,5 +1,11 @@
 <template>
   <div>
+      <!-- loader if !loading === false -->
+  <div v-if="!loading">
+      <img class="rounded mx-auto d-block" :src="image" alt="Loading...">
+      </div>
+      <!-- else statement for loader in div -->
+      <div v-else>
     <!-- have to add click event for modal with modal method-->
     <button @click="loadCreateModal" class="btn btn-primary btn-block">Add New Book</button>
     <!-- if we have tasks then show the table -->
@@ -25,7 +31,8 @@
           <td>
             <button @click="loadUpdateModal(index)" class="btn btn-info">Edit</button>
             <td><button @click="deleteTask(index)" class="btn btn-danger">Delete</button></td>
-        
+          
+
         </tr>
        
       </tbody>
@@ -51,23 +58,23 @@
 
               <label for="Name">Name</label>
               <!-- vue modal inputs on data() -- task.name -->
-              <input v-model="new_update_task.name" type="text" id="name" class="form-control" />
+              <input v-model="task.name" type="text" id="name" class="form-control" />
             </div>
             <div class="form-group">
               <label for="description">Description</label>
               <!-- vue modal inputs on data method task.body -->
-              <input v-model="new_update_task.body" type="text" id="description" class="form-control" />
+              <input v-model="task.body" type="text" id="description" class="form-control" />
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button @click="updateTask" type="button" class="btn btn-primary">Save changes</button>
+            <button @click="createTask" type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
    
    
-   
+   </div>
     </div>
     <div class="modal fade" id="update-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -121,8 +128,10 @@ export default {
       tasks: [],
       uri: "http://localhost:8000/tasks/",
         errors: [],
-        new_update_task: []
-    };
+        new_update_task: [],
+        image: 'images/loader1.gif',
+        loading: false
+    }
   },
 
   methods: {
@@ -141,6 +150,7 @@ export default {
       axios.post(this.uri, { name: this.task.name, body: this.task.body }).then(response=> 
       {
           this.tasks.push(response.data.task);
+
           this.resetData();
           $("#create-modal").modal("hide")
           }).catch(error=>{
@@ -202,12 +212,13 @@ export default {
         this.tasks = response.data.tasks;
         this.loading = true;
       });
-    }
-  },
-    //clears inputs for next book/task
-  resetData(){
-      this.task.name ='',
-      this.task.body -''
+    },
+    resetData(){
+
+                this.task.name = '';
+                this.task.body = '';
+
+            }
   },
   mounted() {
     this.loadTasks();
